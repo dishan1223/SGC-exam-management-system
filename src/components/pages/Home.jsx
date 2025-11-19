@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 
 const dummyExams = [
   { _id: "1", name: "1st Term Exam", class: 11, session: 2025 },
@@ -8,7 +9,7 @@ const dummyExams = [
 ];
 
 export default function HOME() {
-  const [exams, setExams] = useState(dummyExams);
+  const [exams, setExams] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", class: "", session: "", examIdDigit: 0 });
@@ -17,6 +18,52 @@ export default function HOME() {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
+
+
+
+  // get exam data from /api/exams
+  useEffect(() =>{
+    async function fetchExams(){
+      try {
+        //axios returns a promise, that's why i need to await it.
+        const res = await axios.get("/api/exams");
+        if(res.status===200){
+          setExams(res.data ?? []);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchExams();
+  }, [])
+
+
+
+
+  // Delete exam
+  async function deleteExam(_id){
+    // confirm delete
+    const confirmDelete = window.confirm("Are you sure you want to delete this exam?");
+    if(!confirmDelete) return;
+
+    try {
+      const res = await axios.delete("/api/exams/delete",{data:{_id}});
+      if (res.status===200){
+        window.location.reload();
+      }
+    } catch (error) {
+      console.log(error);
+      alert("error check console")
+    }
+  }
+
+
+
+
+
+
+
 
   const startNewExam = async () => {
     const { name, class: cls, session } = form;
@@ -83,8 +130,8 @@ export default function HOME() {
                   <td className="p-3 text-center">{exam.class}</td>
                   <td className="p-3 text-center">{exam.session}</td>
                   <td className="p-3 flex justify-end gap-2">
-                    <button className="px-2 py-1 bg-green-200 text-green-700 rounded hover:bg-green-300">View</button>
-                    <button className="px-2 py-1 bg-rose-200 text-rose-500 rounded hover:bg-rose-300">Delete</button>
+                    <Link href={`/exam/${exam._id}`} className="px-2 py-1 bg-green-200 text-green-700 rounded hover:bg-green-300">View</Link>
+                    <button onClick={() => deleteExam(exam._id)} className="px-2 py-1 bg-rose-200 text-rose-500 rounded hover:bg-rose-300">Delete</button>
                   </td>
                 </tr>
               ))}

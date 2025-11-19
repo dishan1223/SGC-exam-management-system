@@ -1,12 +1,12 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
-export async function GET(req) {
+export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db(process.env.DB);
 
-    // Await the toArray() to get actual data
+    // database fetching requires awaiting
     const students = await db.collection("students").find().toArray();
 
 

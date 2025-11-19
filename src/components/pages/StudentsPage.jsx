@@ -23,6 +23,8 @@ export default function StudentsPage() {
   }, []);
 
   async function deleteStudent(_id,name){
+    const confirmation = window.confirm("Are you sure?");
+    if(!confirmation) return;
     try {
       const res = await axios.delete("/api/students/delete",{
         data: {_id,name},
@@ -114,26 +116,26 @@ export default function StudentsPage() {
         <table className="w-full bg-white">
           <thead className="bg-[#5BB7D8]">
             <tr>
-              <th className="p-3 text-left text-white">Serial</th>
-              <th className="p-3 text-left text-white">Name</th>
-              <th className="p-3 text-left text-white">Class</th>
-              <th className="p-3 text-left text-white">Roll</th>
-              <th className="p-3 text-left text-white">Section</th>
-              <th className="p-3 text-left text-white">Group</th>
-              <th className="p-3 text-right text-white">Actions</th>
+              <th className="p-3 text-center text-white">Serial</th>
+              <th className="p-3 text-center text-white">Name</th>
+              <th className="p-3 text-center text-white">Class</th>
+              <th className="p-3 text-center text-white">Roll</th>
+              <th className="p-3 text-center text-white">Section</th>
+              <th className="p-3 text-center text-white">Group</th>
+              <th className="p-3 text-center text-white">Actions</th>
             </tr>
           </thead>
 
           <tbody>
             {sortedStudents.map((s, i) => (
-              <tr key={i} className="border-t hover:bg-gray-100">
-                <td>{i +1}</td>
-                <td className="p-">{s.name}</td>
-                <td className="p-">{s.class}</td>
-                <td className="p-">{s.roll}</td>
-                <td className="p-">{s.section}</td>
-                <td className="p-">{s.group}</td>
-                <td className="p- flex justify-end translate-x-[-50px]">
+              <tr key={i} className="hover:bg-gray-100">
+                <td className="px-2 border text-center border-gray-400">{i +1}</td>
+                <td className="px-2 border border-gray-400">{s.name}</td>
+                <td className="px-2 border text-center border-gray-400">{s.class}</td>
+                <td className="px-2 border text-center border-gray-400">{s.roll}</td>
+                <td className="px-2 border text-center border-gray-400">{s.section}</td>
+                <td className="px-2 border text-center border-gray-400">{s.group}</td>
+                <td className="flex justify-center border border-gray-400 px-2">
                   <button
                     onClick={() => deleteStudent(s._id, s.name)}
                     className="px-2 py-1 bg-rose-200 text-rose-500 font-bold rounded cursor-pointer"

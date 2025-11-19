@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
-function generateExamId(digits) {
-  const min = Math.pow(10, digits - 1);
-  const max = Math.pow(10, digits) - 1;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 export async function POST(req) {
   const data = await req.json();
 
@@ -28,32 +22,34 @@ export async function POST(req) {
   // 1) Insert the exam
   const examInsert = await db.collection("exams").insertOne({
     name: data.name,
-    class: data.class,
-    session: data.session,
-    examIdDigit: data.examIdDigit,
+    class: Number(data.class),
+    session: Number(data.session),
+    examIdDigit: Number(data.examIdDigit),
     createdAt: new Date(),
   });
 
   const examId = examInsert.insertedId;
 
   // 2) Get all students from that class
-  const students = await db
+  let students = await db
     .collection("students")
-    .find({ class: data.class })
+    .find({ class: Number(data.class) })
     .toArray();
 
-  const usedIds = new Set();
+  // 3) Shuffle students randomly
+  students = students
+    .map(s => ({ ...s, rand: Math.random() }))
+    .sort((a, b) => a.rand - b.rand);
+
+  // 4) Assign sequential exam IDs
+  const examIdDigit = Number(data.examIdDigit);
+  const formatExamId = n => String(n).padStart(examIdDigit, "0");
+
   const bulkOps = [];
+  let counter = 1;
 
-  // 3) Assign examId + unique random examId
   for (const student of students) {
-    let studentExamId;
-
-    do {
-      studentExamId = generateExamId(data.examIdDigit);
-    } while (usedIds.has(studentExamId));
-
-    usedIds.add(studentExamId);
+    const studentExamId = formatExamId(counter);
 
     bulkOps.push({
       updateOne: {
@@ -66,9 +62,11 @@ export async function POST(req) {
         },
       },
     });
+
+    counter++;
   }
 
-  // 4) Execute updates
+  // 5) Execute updates
   if (bulkOps.length > 0) {
     await db.collection("students").bulkWrite(bulkOps);
   }
@@ -79,8 +77,8 @@ export async function POST(req) {
       exam: {
         _id: examId,
         name: data.name,
-        class: data.class,
-        session: data.session,
+        class: Number(data.class),
+        session: Number(data.session),
       },
     },
     { status: 200 }
