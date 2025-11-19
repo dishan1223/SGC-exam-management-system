@@ -24,13 +24,16 @@ export default function HOME() {
 
     setLoading(true);
     try {
-      const res = await axios.post("/api/exams/new", { name, class: Number(cls), session: Number(session) });
+      const res = await axios.post("/api/exams/new", { name, class: Number(cls), session: Number(session), examIdDigit: Number(form.examIdDigit) });
       if (res.status === 201 || res.status === 200) {
-        setExams(prev => [...prev, res.data]);
+        setExams(prev => [...prev, res.data.exam.name]);
         setShowModal(false);
         setForm({ name: "", class: "", session: "", examIdDigit: 0 });
-        alert(`Exam ${res.data.name} created`);
-      } else {
+        window.location.reload();
+      } else if(res.status === 500){
+        alert(res.data.message);
+      }
+      else {
         alert("Failed to create exam");
       }
     } catch (err) {
@@ -43,20 +46,22 @@ export default function HOME() {
 
   return (
     <div className="w-full">
-      <h1 className="text-xl font-semibold mb-6">Dashboard</h1>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold">Dashboard</h1>
+        </div>
 
-      <div className="flex justify-end mb-4">
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          onClick={() => setShowModal(true)}
-        >
-          Start New Exam
-        </button>
+        <div className="flex justify-end mb-4">
+          <button
+            className="button-blue text-white px-4 py-2 rounded-lg"
+            onClick={() => setShowModal(true)}
+          >
+            Start New Exam
+          </button>
+        </div>
       </div>
 
-      <div className="bg-[#5BB7D8] text-white px-4 py-3 rounded-lg mb-5">
-        On Going Exams
-      </div>
+      
 
       <div className="rounded bg-[#5BB7D8] overflow-auto max-h-[60vh]">
         {exams.length === 0 ? (

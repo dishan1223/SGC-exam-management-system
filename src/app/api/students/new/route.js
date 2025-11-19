@@ -6,6 +6,12 @@ import clientPromise from "@/lib/mongodb";
 export async function POST(req){
     const student = await req.json();
 
+    try {
+        student.class = Number(student.class);
+    } catch (error) {
+        return NextResponse.json({message:"class is missing"}, {status:500});
+    }
+
     if(!student.name || !student.roll || !student.phoneNumber || !student.class ||!student.section||!student.group){
         return NextResponse.json({message: "There are missing fields"}, {status:300})
     }
@@ -31,6 +37,7 @@ export async function POST(req){
         return NextResponse.json({ message: "Cannot insert student" }, { status: 500 });
     }
 
+    console.log(student)
     
     return NextResponse.json(student,{
         status: 201,

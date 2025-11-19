@@ -58,8 +58,6 @@ export default function StudentsPage() {
       class: form.get("class"),
       section: form.get("section"),
       group: form.get("group"),
-      ongoingExam : null,
-      ExamId : 0,
     };
 
     try {
@@ -93,10 +91,14 @@ export default function StudentsPage() {
     
   }
 
+  // this is to solt students with their roll number
+  const sortedStudents = [...students].sort((a, b) => Number(a.roll) - Number(b.roll));
+
+
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Students</h2>
 
         <button
@@ -112,24 +114,26 @@ export default function StudentsPage() {
         <table className="w-full bg-white">
           <thead className="bg-[#5BB7D8]">
             <tr>
+              <th className="p-3 text-left text-white">Serial</th>
               <th className="p-3 text-left text-white">Name</th>
-              <th className="p-3 text-left text-white">Roll</th>
               <th className="p-3 text-left text-white">Class</th>
+              <th className="p-3 text-left text-white">Roll</th>
               <th className="p-3 text-left text-white">Section</th>
               <th className="p-3 text-left text-white">Group</th>
-              <th className="p-3 text-left text-white">Actions</th>
+              <th className="p-3 text-right text-white">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {students.map((s, i) => (
+            {sortedStudents.map((s, i) => (
               <tr key={i} className="border-t hover:bg-gray-100">
-                <td className="p-3">{s.name}</td>
-                <td className="p-3">{s.roll}</td>
-                <td className="p-3">{s.class}</td>
-                <td className="p-3">{s.section}</td>
-                <td className="p-3">{s.group}</td>
-                <td className="p-3 flex justify-center translate-x-[-50px]">
+                <td>{i +1}</td>
+                <td className="p-">{s.name}</td>
+                <td className="p-">{s.class}</td>
+                <td className="p-">{s.roll}</td>
+                <td className="p-">{s.section}</td>
+                <td className="p-">{s.group}</td>
+                <td className="p- flex justify-end translate-x-[-50px]">
                   <button
                     onClick={() => deleteStudent(s._id, s.name)}
                     className="px-2 py-1 bg-rose-200 text-rose-500 font-bold rounded cursor-pointer"
