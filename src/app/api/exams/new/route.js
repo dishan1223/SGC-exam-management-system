@@ -46,10 +46,11 @@ export async function POST(req) {
   const formatExamId = n => String(n).padStart(examIdDigit, "0");
 
   const bulkOps = [];
-  let counter = 1;
+  let counter = Math.pow(10, examIdDigit - 1) + 1;
+
 
   for (const student of students) {
-    const studentExamId = formatExamId(counter);
+    
 
     bulkOps.push({
       updateOne: {
@@ -57,7 +58,7 @@ export async function POST(req) {
         update: {
           $set: {
             ongoingExamId: examId,
-            examId: studentExamId,
+            examId: counter,
           },
         },
       },
