@@ -36,7 +36,7 @@ export default function AdmitCardPage(){
 
     return (
         <div className="h-screen w-full flex justify-center">
-            <div className="flex flex-col print-container">
+            <div className="flex flex-col print-container gap-2">
                 {sortedStudents.map((s,i) => (
                     <div key={i} className="admit-wrapper">
                         <AdmitCard
