@@ -6,9 +6,6 @@ export async function GET(){
         const client = await clientPromise;
         const collection = await client.db(process.env.DB).collection("exams").find().toArray();
 
-        console.log(collection);
-
-
         return NextResponse.json(collection, {status:200});
     } catch (error) {
         console.log(error);

@@ -2,30 +2,32 @@
 import { useState } from "react";
 import Home from "@/components/pages/Home";
 import StudentsPage from "@/components/pages/StudentsPage";
+import Results from "@/components/pages/Results";
+import ViewResults from "@/components/pages/ViewResults";
 
 export default function Dashboard() {
   const [active, setActive] = useState("home");
 
   const menuItems = [
-    { id: "home", label: "Home" },
+    { id: "exams", label: "Exams" },
     { id: "students", label: "Students" },
-    { id: "previous", label: "Previous Results" },
-    { id: "publish", label: "Publish Results" },
+    { id: "results", label: "Results" },
+    { id: "viewResults", label: "View Results" },
   ];
 
   function renderPage() {
     switch (active) {
-      case "home":
+      case "exams":
         return <Home />;
 
       case "students":
         return <StudentsPage />;
 
-      case "previous":
-        return <div>Previous Results Page Coming...</div>;
+      case "viewResults":
+        return <ViewResults />;
 
-      case "publish":
-        return <div>Publish Results Page Coming...</div>;
+      case "results":
+        return <Results />;
 
       default:
         return <Home />;
@@ -35,7 +37,7 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen bg-white">
       {/* Sidebar */}
-      <div className="w-[250px] bg-[#EDEAEA] p-6 flex flex-col gap-6">
+      <div className="w-[250px] bg-[#eeeeee] p-6 flex flex-col gap-6">
         <div>
           <h1 className="text-2xl font-semibold leading-6">SGC</h1>
           <p className="text-lg">Exam Dashboard</p>
@@ -47,10 +49,10 @@ export default function Dashboard() {
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`px-4 py-3 text-left rounded-lg border transition 
+              className={`px-4 py-3 text-left font-bold rounded-lg border transition 
                 ${
                   active === item.id
-                    ? "bg-white border-gray-400"
+                    ? "bg-[#0088cc] text-white border-gray-400"
                     : "bg-gray-300 border-transparent"
                 }
               `}

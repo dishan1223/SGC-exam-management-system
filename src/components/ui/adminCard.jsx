@@ -13,8 +13,8 @@ export default function AdmitCard({
 }) {
   return (
     <div className="border-10 py-2 px-4">
-        <div className="w-auto ">
-            <div className="flex jusitfy-between min-w-[758px]">
+        <div className="w-auto">
+            <div className="flex jusitfy-between min-w-[728px]">
                 <div className="flex w-full gap-2">
                     <Image src="/logo.jpeg" width={50} height={50} alt="logo"/>
                     <div>

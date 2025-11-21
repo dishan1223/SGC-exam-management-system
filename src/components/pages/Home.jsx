@@ -95,7 +95,7 @@ export default function HOME() {
     <div className="w-full">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
+          <h1 className="text-2xl font-semibold">Exams</h1>
         </div>
 
         <div className="flex justify-end mb-4">
@@ -117,6 +117,7 @@ export default function HOME() {
           <table className="w-full bg-white">
             <thead className="bg-[#5BB7D8] text-white">
               <tr>
+                <th className="p-3 text-center">No.</th>
                 <th className="p-3 text-left">Exam Name</th>
                 <th className="p-3 text-center">Class</th>
                 <th className="p-3 text-center">Session</th>
@@ -125,11 +126,12 @@ export default function HOME() {
             </thead>
             <tbody>
               {exams.map((exam, i) => (
-                <tr key={i} className="border-t hover:bg-gray-100">
-                  <td className="p-3">{exam.name}</td>
-                  <td className="p-3 text-center">{exam.class}</td>
-                  <td className="p-3 text-center">{exam.session}</td>
-                  <td className="p-3 flex justify-end gap-2">
+                <tr key={i} className="hover:bg-gray-100">
+                  <td className="px-3 border border-gray-400 text-center">{i+1}</td>
+                  <td className="px-3 border border-gray-400">{exam.name}</td>
+                  <td className="px-3 border border-gray-400 text-center">{exam.class}</td>
+                  <td className="px-3 border border-gray-400 text-center">{exam.session}</td>
+                  <td className="px-3 border border-gray-400 flex justify-end gap-2">
                     <Link href={`/exam/${exam._id}`} className="px-2 py-1 bg-green-200 text-green-700 rounded hover:bg-green-300">View</Link>
                     <button onClick={() => deleteExam(exam._id)} className="px-2 py-1 bg-rose-200 text-rose-500 rounded hover:bg-rose-300">Delete</button>
                   </td>

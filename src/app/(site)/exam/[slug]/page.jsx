@@ -72,7 +72,7 @@ export default function EXAM() {
         </div>
         <div className="flex gap-4">
             <Link href={`admitCards/${exam ? exam._id : ""}`} className="bg-[#5BB7D8] text-white font-bold p-2 rounded-lg cursor-pointer">Admit Cards</Link>
-            <Link href={"publish"} className="bg-[#5BB7D8] text-white font-bold p-2 rounded-lg cursor-pointer">Publish Results</Link>
+            <Link href={"/results"} className="bg-[#5BB7D8] text-white font-bold p-2 rounded-lg cursor-pointer">Publish Results</Link>
         </div>
       </div>
 
