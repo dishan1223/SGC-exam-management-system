@@ -3,18 +3,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
-// => this is to capitalize subject
+// Capitalize subject
 function capitalizeFirstLetter(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-
 export default function PublishResultsPage() {
   const [exams, setExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState(""); // New group filter
+  const [selectedGroup, setSelectedGroup] = useState("");
   const [students, setStudents] = useState([]);
   const [marks, setMarks] = useState({});
   const [subject, setSubject] = useState("");
@@ -22,7 +20,7 @@ export default function PublishResultsPage() {
   const [totalCQ, setTotalCQ] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Fetch exams list
+  // Get exam list
   useEffect(() => {
     async function fetchExams() {
       try {
@@ -35,7 +33,7 @@ export default function PublishResultsPage() {
     fetchExams();
   }, []);
 
-  // Fetch students for selected exam
+  // Get students for selected exam
   useEffect(() => {
     if (!selectedExam) return;
 
@@ -50,74 +48,71 @@ export default function PublishResultsPage() {
     fetchStudents();
   }, [selectedExam]);
 
-  // Submit results
+  // Publish results
   async function submitResults() {
     if (!subject) {
       alert("Please input subject.");
       return;
     }
 
-    if (!selectedExam || !totalMCQ || !totalCQ) {
-      const confirmation = window.confirm(
-        "Some fields are missing, still want to save?"
+    if (!selectedExam || totalMCQ === "" || totalCQ === "") {
+      const confirmMissing = window.confirm(
+        "Some fields are empty. Continue?"
       );
-      if (!confirmation) return;
+      if (!confirmMissing) return;
     }
 
-    const confirmation = window.confirm("Publish these results?");
-    if (!confirmation) return;
+    const confirmPublish = window.confirm("Publish these results?");
+    if (!confirmPublish) return;
 
     setLoading(true);
 
-    // this is to get selected exam name....
     const examObj = exams.find((e) => e._id === selectedExam);
-    
+
+    // SINGLE SUBJECT MODE FIX — no subjectList
     const payload = students
-	  .filter((s) => (selectedGroup ? s.group === selectedGroup : true))
-	  .map((s) => {
-	    const mcq = marks[s._id]?.mcq || 0; // default to 0
-	    const cq = marks[s._id]?.cq || 0;   // default to 0
+      .filter((s) => (selectedGroup ? s.group === selectedGroup : true))
+      .map((s) => {
+        const mcq = Number(marks[s._id]?.mcq || 0);
+        const cq = Number(marks[s._id]?.cq || 0);
 
-	    const mcqNum = Number(mcq);
-	    const cqNum = Number(cq);
+        return {
+          studentId: s._id,
+          name: s.name,
+          roll: s.roll,
+          group: s.group,
+          section: s.section,
+          session: examObj?.session,
+          exam: examObj?.name,
 
-	    const totalMCQNum = totalMCQ === "" ? "" : Number(totalMCQ);
-	    const totalCQNum = totalCQ === "" ? "" : Number(totalCQ);
-
-	    return {
-	    	// examObj should not be (false) but still for safety perposes, i used optional param.
-	    	exam: examObj?.name || "",
-        session: examObj?.session,
-	      studentId: s._id,
-	      name: s.name,
-	      roll: s.roll,
-	      group: s.group,
-	      section: s.section,
-	      subject: capitalizeFirstLetter(subject),
-	      mcq: mcqNum,
-	      cq: cqNum,
-	      obtained: mcqNum + cqNum,
-	      totalMCQ: totalMCQNum,
-	      totalCQ: totalCQNum,
-	      totalMarks:
-	        totalMCQNum !== "" && totalCQNum !== "" ? totalMCQNum + totalCQNum : "",
-	    };
-	  });
-
+          subjects: [
+            {
+              subject: capitalizeFirstLetter(subject),
+              mcq,
+              cq,
+              obtained: mcq + cq,
+              totalMCQ: Number(totalMCQ) || 0,
+              totalCQ: Number(totalCQ) || 0,
+              totalMarks: (Number(totalMCQ) || 0) + (Number(totalCQ) || 0)
+            }
+          ]
+        };
+      });
 
     try {
       const res = await axios.post("/api/exams/publish", payload);
 
       if (res.status === 201) {
         alert("Results Published Successfully");
-        setSelectedExam("");
-				setSelectedGroup("");
-				setStudents([]);
-				setMarks({});
-				setSubject("");
-				setTotalMCQ("");
-				setTotalCQ("");
 
+        // Reset all states (better than reload)
+        setSelectedExam("");
+        setSelectedGroup("");
+        setStudents([]);
+        setMarks({});
+        setSubject("");
+        setTotalMCQ("");
+        setTotalCQ("");
       } else {
         alert("Failed to publish results");
       }
@@ -131,15 +126,14 @@ export default function PublishResultsPage() {
 
   const filteredStudents = students
     .filter((s) => (selectedGroup ? s.group === selectedGroup : true))
-    .sort((a, b) => Number(a.examId) - Number(b.examId));
+    .sort((a, b) => Number(a.roll) - Number(b.roll));
 
   return (
     <div className="w-full p-6">
-      {/* Page Header */}
       <h2 className="text-2xl font-semibold mb-4">Publish Results</h2>
 
-      {/* Exam + Group Filter */}
-      <div className="mb-4 flex gap-4 items-center">
+      {/* Filters */}
+      <div className="mb-4 flex gap-4">
         <div>
           <label className="font-semibold">Select Exam:</label>
           <select
@@ -184,7 +178,7 @@ export default function PublishResultsPage() {
 
           <input
             type="number"
-            placeholder="Total MCQ Marks"
+            placeholder="Total MCQ"
             className="border p-2 rounded w-40"
             value={totalMCQ}
             onChange={(e) => setTotalMCQ(e.target.value)}
@@ -192,7 +186,7 @@ export default function PublishResultsPage() {
 
           <input
             type="number"
-            placeholder="Total CQ Marks"
+            placeholder="Total CQ"
             className="border p-2 rounded w-40"
             value={totalCQ}
             onChange={(e) => setTotalCQ(e.target.value)}
@@ -200,18 +194,17 @@ export default function PublishResultsPage() {
         </div>
       )}
 
-      {/* Students Table */}
+      {/* Students */}
       {selectedExam && (
-        <div className="mt-4">
+        <div>
           <h3 className="text-xl font-semibold mb-2">Enter Marks</h3>
 
           <div className="rounded bg-[#5BB7D8] max-h-[70vh] overflow-auto">
             <table className="w-full bg-white">
               <thead className="bg-[#5BB7D8]">
                 <tr>
-                  <th className="p-3 text-center text-white">Serial</th>
+                  <th className="p-3 text-center text-white">#</th>
                   <th className="p-3 text-center text-white">Name</th>
-                  <th className="p-3 text-center text-white">Exam ID</th>
                   <th className="p-3 text-center text-white">Roll</th>
                   <th className="p-3 text-center text-white">Group</th>
                   <th className="p-3 text-center text-white">MCQ</th>
@@ -222,51 +215,40 @@ export default function PublishResultsPage() {
               <tbody>
                 {filteredStudents.map((s, i) => (
                   <tr key={s._id} className="hover:bg-gray-100">
-                    <td className="px-2 border text-center border-gray-400">
-                      {i + 1}
-                    </td>
+                    <td className="px-2 border text-center">{i + 1}</td>
+                    <td className="px-2 border">{s.name}</td>
+                    <td className="px-2 border text-center">{s.roll}</td>
+                    <td className="px-2 border text-center">{s.group}</td>
 
-                    <td className="px-2 border border-gray-400">{s.name}</td>
-
-                    <td className="px-2 border text-center border-gray-400">
-                      {s.examId}
-                    </td>
-
-                    <td className="px-2 border text-center border-gray-400">
-                      {s.roll}
-                    </td>
-
-                    <td className="px-2 border text-center border-gray-400">
-                      {s.group}
-                    </td>
-
-                    {/* MCQ */}
-                    <td className="px-2 border text-center border-gray-400">
+                    <td className="px-2 border text-center">
                       <input
                         type="number"
                         className="border p-1 rounded w-20 text-center"
-                        placeholder="MCQ"
                         value={marks[s._id]?.mcq || ""}
                         onChange={(e) =>
                           setMarks({
                             ...marks,
-                            [s._id]: { ...marks[s._id], mcq: e.target.value },
+                            [s._id]: {
+                              ...marks[s._id],
+                              mcq: e.target.value
+                            }
                           })
                         }
                       />
                     </td>
 
-                    {/* CQ */}
-                    <td className="px-2 border text-center border-gray-400">
+                    <td className="px-2 border text-center">
                       <input
                         type="number"
                         className="border p-1 rounded w-20 text-center"
-                        placeholder="CQ"
                         value={marks[s._id]?.cq || ""}
                         onChange={(e) =>
                           setMarks({
                             ...marks,
-                            [s._id]: { ...marks[s._id], cq: e.target.value },
+                            [s._id]: {
+                              ...marks[s._id],
+                              cq: e.target.value
+                            }
                           })
                         }
                       />
@@ -277,7 +259,6 @@ export default function PublishResultsPage() {
             </table>
           </div>
 
-          {/* Submit Button */}
           <div className="flex justify-end mt-4">
             <button
               onClick={submitResults}
