@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FileText, Users, BookOpen, CheckCircle, AlertCircle } from "lucide-react";
 
 // Capitalize subject
 function capitalizeFirstLetter(str) {
@@ -129,101 +130,135 @@ export default function PublishResultsPage() {
     .sort((a, b) => Number(a.roll) - Number(b.roll));
 
   return (
-    <div className="w-full p-6">
-      <h2 className="text-2xl font-semibold mb-4">Publish Results</h2>
+    <div className="w-full px-6 py-4">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800">Publish Results</h1>
+        <p className="text-sm text-gray-500 mt-1">Enter and publish exam results for students</p>
+      </div>
 
       {/* Filters */}
-      <div className="mb-4 flex gap-4">
-        <div>
-          <label className="font-semibold">Select Exam:</label>
-          <select
-            className="border p-2 rounded ml-2"
-            value={selectedExam}
-            onChange={(e) => setSelectedExam(e.target.value)}
-          >
-            <option value="">Choose Exam</option>
-            {exams.map((exam) => (
-              <option key={exam._id} value={exam._id}>
-                {exam.name} ({exam.session})
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Select Exam</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FileText size={16} className="text-gray-400" />
+              </div>
+              <select
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={selectedExam}
+                onChange={(e) => setSelectedExam(e.target.value)}
+              >
+                <option value="">Choose Exam</option>
+                {exams.map((exam) => (
+                  <option key={exam._id} value={exam._id}>
+                    {exam.name} ({exam.session})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        <div>
-          <label className="font-semibold">Select Group:</label>
-          <select
-            className="border p-2 rounded ml-2"
-            value={selectedGroup}
-            onChange={(e) => setSelectedGroup(e.target.value)}
-          >
-            <option value="">All Groups</option>
-            <option value="Science">Science</option>
-            <option value="Arts">Arts</option>
-            <option value="Commerce">Commerce</option>
-          </select>
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Select Group</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Users size={16} className="text-gray-400" />
+              </div>
+              <select
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+              >
+                <option value="">All Groups</option>
+                <option value="Science">Science</option>
+                <option value="Arts">Arts</option>
+                <option value="Commerce">Commerce</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Common Fields */}
       {selectedExam && (
-        <div className="flex gap-4 mb-6">
-          <input
-            type="text"
-            placeholder="Subject Name"
-            className="border p-2 rounded w-64"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-          />
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Subject Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Subject Name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <BookOpen size={16} className="text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter subject name"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <input
-            type="number"
-            placeholder="Total MCQ"
-            className="border p-2 rounded w-40"
-            value={totalMCQ}
-            onChange={(e) => setTotalMCQ(e.target.value)}
-          />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Total MCQ Marks</label>
+              <input
+                type="number"
+                placeholder="Total MCQ"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={totalMCQ}
+                onChange={(e) => setTotalMCQ(e.target.value)}
+              />
+            </div>
 
-          <input
-            type="number"
-            placeholder="Total CQ"
-            className="border p-2 rounded w-40"
-            value={totalCQ}
-            onChange={(e) => setTotalCQ(e.target.value)}
-          />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Total CQ Marks</label>
+              <input
+                type="number"
+                placeholder="Total CQ"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={totalCQ}
+                onChange={(e) => setTotalCQ(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
       )}
 
       {/* Students */}
       {selectedExam && (
-        <div>
-          <h3 className="text-xl font-semibold mb-2">Enter Marks</h3>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900">Enter Marks</h3>
+          </div>
 
-          <div className="rounded bg-[#5BB7D8] max-h-[70vh] overflow-auto">
-            <table className="w-full bg-white">
-              <thead className="bg-[#5BB7D8]">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="p-3 text-center text-white">#</th>
-                  <th className="p-3 text-center text-white">Name</th>
-                  <th className="p-3 text-center text-white">Roll</th>
-                  <th className="p-3 text-center text-white">Group</th>
-                  <th className="p-3 text-center text-white">MCQ</th>
-                  <th className="p-3 text-center text-white">CQ</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MCQ</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CQ</th>
                 </tr>
               </thead>
-
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {filteredStudents.map((s, i) => (
-                  <tr key={s._id} className="hover:bg-gray-100">
-                    <td className="px-2 border text-center">{i + 1}</td>
-                    <td className="px-2 border">{s.name}</td>
-                    <td className="px-2 border text-center">{s.roll}</td>
-                    <td className="px-2 border text-center">{s.group}</td>
+                  <tr key={s._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{i + 1}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{s.name}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.roll}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.group}</td>
 
-                    <td className="px-2 border text-center">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <input
                         type="number"
-                        className="border p-1 rounded w-20 text-center"
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         value={marks[s._id]?.mcq || ""}
                         onChange={(e) =>
                           setMarks({
@@ -237,10 +272,10 @@ export default function PublishResultsPage() {
                       />
                     </td>
 
-                    <td className="px-2 border text-center">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <input
                         type="number"
-                        className="border p-1 rounded w-20 text-center"
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         value={marks[s._id]?.cq || ""}
                         onChange={(e) =>
                           setMarks({
@@ -259,13 +294,23 @@ export default function PublishResultsPage() {
             </table>
           </div>
 
-          <div className="flex justify-end mt-4">
+          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
             <button
               onClick={submitResults}
               disabled={loading}
-              className="px-5 py-2 bg-blue-600 text-white rounded"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Publishing..." : "Publish Results"}
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle size={16} />
+                  Publish Results
+                </>
+              )}
             </button>
           </div>
         </div>

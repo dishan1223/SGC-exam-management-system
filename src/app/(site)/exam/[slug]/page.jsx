@@ -2,9 +2,8 @@
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Trash } from "lucide-react";
+import { Trash, ArrowLeft, FileText, Send } from "lucide-react";
 import Link from "next/link";
-
 
 export default function EXAM() {
   const [exam, setExam] = useState(null);
@@ -29,92 +28,117 @@ export default function EXAM() {
     fetchExamDataAndStudents(slug);
   }, [slug]);
 
-  async function deleteStudent(_id,name){
+  async function deleteStudent(_id, name) {
     const confirmation = window.confirm("Are you sure?");
-    if(!confirmation) return;
+    if (!confirmation) return;
     try {
-      const res = await axios.delete("/api/students/delete",{
-        data: {_id,name},
-      })
+      const res = await axios.delete("/api/students/delete", {
+        data: { _id, name },
+      });
 
-      if(res.status===200){
+      if (res.status === 200) {
         // this code deletes the student from the DOM
         setStudents(prev => prev.filter(s => s.name !== name));
-        alert(`student: ${name} deleted`)
-      }else if(res.status===400){
-        alert("something went wrong. check backend logs")
-      }
-      else{
-        alert("failed to delete student")
+        alert(`student: ${name} deleted`);
+      } else if (res.status === 400) {
+        alert("something went wrong. check backend logs");
+      } else {
+        alert("failed to delete student");
       }
     } catch (error) {
       console.log(error);
-      alert("Error Deleting student: check console for error details")
+      alert("Error Deleting student: check console for error details");
     }
-    
   }
-
-
 
   const sortedStudents = [...students].sort((a, b) => Number(a.examId) - Number(b.examId));
   return (
-    <div className="p-8 w-full">
+    <div className="w-full px-6 py-4">
+      {/* Back Button */}
+      <Link 
+        href="/dashboard" 
+        className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+      >
+        <ArrowLeft size={16} />
+        Back to Dashboard
+      </Link>
 
-      <Link href={"/dashboard"} className="p-2 button-blue rounded-lg text-white">Back</Link>
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        {exam ? exam.name : "Loading Exam..."}
-      </h1>
-      <div className="flex justify-between mb-2">
-        <div className="flex gap-4">
-            <h2><span className="font-bold">Class</span> : {exam ? exam.class : "Loading Class..."}</h2>
-            <h2><span className="font-bold">Session</span> : {exam ? exam.session : "Loading Session..."}</h2>
-        </div>
-        <div className="flex gap-4">
-            <Link href={`admitCards/${exam ? exam._id : ""}`} className="bg-[#5BB7D8] text-white font-bold p-2 rounded-lg cursor-pointer">Admit Cards</Link>
-            <Link href={"/results"} className="bg-[#5BB7D8] text-white font-bold p-2 rounded-lg cursor-pointer">Publish Results</Link>
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+          {exam ? exam.name : "Loading Exam..."}
+        </h1>
+        
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex gap-6">
+            <div>
+              <span className="text-sm text-gray-500">Class</span>
+              <p className="font-medium text-gray-900">{exam ? exam.class : "Loading Class..."}</p>
+            </div>
+            <div>
+              <span className="text-sm text-gray-500">Session</span>
+              <p className="font-medium text-gray-900">{exam ? exam.session : "Loading Session..."}</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
+            <Link 
+              href={`admitCards/${exam ? exam._id : ""}`} 
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <FileText size={16} />
+              Admit Cards
+            </Link>
+            <Link 
+              href="/results" 
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            >
+              <Send size={16} />
+              Publish Results
+            </Link>
+          </div>
         </div>
       </div>
 
-
-      <div className="button-blue rounded bg-[#5BB7D8] max-h-[80vh] overflow-auto">
-        <table className="w-full bg-white">
-          <thead className="bg-[#5BB7D8]">
-            <tr>
-              <th className="p-3 text-center text-white">Serial</th>
-              <th className="p-3 text-center text-white">Name</th>
-              <th className="p-3 text-center text-white">Exam ID</th>
-              <th className="p-3 text-center text-white">Roll</th>
-              <th className="p-3 text-center text-white">Section</th>
-              <th className="p-3 text-center text-white">Group</th>
-              <th className="p-3 text-center text-white">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sortedStudents.map((s, i) => (
-              <tr key={i} className="hover:bg-gray-100">
-                <td className="px-2 border text-center border-gray-400">{i +1}</td>
-                <td className="px-2 border border-gray-400">{s.name}</td>
-                <td className="px-2 border text-center border-gray-400">{s.examId}</td>
-                <td className="px-2 border text-center border-gray-400">{s.roll}</td>
-                <td className="px-2 border text-center border-gray-400">{s.section}</td>
-                <td className="px-2 border text-center border-gray-400">{s.group}</td>
-                <td className="flex justify-center border border-gray-400 px-2">
-                  <button
-                    onClick={() => deleteStudent(s._id, s.name)}
-                    className="px-2 py-1 bg-rose-200 text-rose-500 font-bold rounded cursor-pointer"
-                  >
-                    <Trash color="#FF2056"/>
-                  </button>
-                </td>
-
+      {/* Students Table */}
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exam ID</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sortedStudents.map((s, i) => (
+                <tr key={i} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{i + 1}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{s.name}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.examId}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.roll}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.section}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.group}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-center">
+                    <button
+                      onClick={() => deleteStudent(s._id, s.name)}
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                      title="Delete Student"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      
     </div>
   );
 }
