@@ -128,6 +128,8 @@ export default function PublishResultsPage() {
   const filteredStudents = students
     .filter((s) => (selectedGroup ? s.group === selectedGroup : true))
     .sort((a, b) => Number(a.roll) - Number(b.roll));
+  const sortedStudents = [...students].sort((a, b) => Number(a.examId) - Number(b.examId));
+
 
   return (
     <div className="w-full px-6 py-4">
@@ -241,7 +243,7 @@ export default function PublishResultsPage() {
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exam ID</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MCQ</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CQ</th>
@@ -252,7 +254,7 @@ export default function PublishResultsPage() {
                   <tr key={s._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{i + 1}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{s.name}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.roll}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.examId}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.group}</td>
 
                     <td className="px-4 py-3 whitespace-nowrap">
