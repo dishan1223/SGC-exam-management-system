@@ -250,7 +250,7 @@ export default function PublishResultsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredStudents.map((s, i) => (
+                {sortedStudents.map((s, i) => (
                   <tr key={s._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{i + 1}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{s.name}</td>
